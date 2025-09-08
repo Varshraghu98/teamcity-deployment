@@ -2,7 +2,7 @@
 
 This repository provides a Docker Compose setup for running a local TeamCity server with a custom build agent.
 
----
+
 
 ## Server settings
 - **Image:** `jetbrains/teamcity-server:2025.07.1`
@@ -15,7 +15,7 @@ This repository provides a Docker Compose setup for running a local TeamCity ser
     - `./data/server:/data/teamcity_server/datadir`
     - `./logs/server:/opt/teamcity/logs`
 
----
+
 
 ## Agent settings
 - **Service name:** `teamcity-agent-2-local` 
