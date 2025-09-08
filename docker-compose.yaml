@@ -1,0 +1,36 @@
+services:
+  teamcity-server-local:
+    image: jetbrains/teamcity-server:2025.07.1
+    container_name: teamcity-server-local
+    restart: unless-stopped
+    ports:
+      - "8111:8111"
+    environment:
+      - TEAMCITY_SERVER_MEM_OPTS=-Xms1g -Xmx2g
+      - TZ=Europe/Berlin
+      - JAVA_OPTS=-Dfile.encoding=UTF-8
+    volumes:
+      - ./data/server:/data/teamcity_server/datadir
+      - ./logs/server:/opt/teamcity/logs
+
+  # Agent 2 — custom minimal-based agent (JDK + Maven + git in ./custom-agent/Dockerfile)
+  teamcity-agent-2-local:
+    build:
+      context: ./custom-agent
+    image: local/teamcity-agent-minimal-mvn17:1.0
+    container_name: teamcity-agent-2-local
+    restart: unless-stopped
+    depends_on:
+      - teamcity-server-local
+    environment:
+      - SERVER_URL=http://teamcity-server-local:8111
+      - AGENT_NAME=agent-2
+      - TZ=Europe/Berlin
+      - JAVA_OPTS=-Dfile.encoding=UTF-8
+      # labeled this agent so builds can target it if required
+      - AGENT_FLAVOR=repro
+    volumes:
+      - ./data/agent2:/data/teamcity_agent/conf
+      - ./work/agent2:/opt/buildagent/work
+      - ./temp/agent2:/opt/buildagent/temp
+      - ${HOME}/.m2:/home/buildagent/.m2
